@@ -98,23 +98,24 @@ const Player = () => {
     }
 
     return (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <Box sx={{ width: { lg: 600, md: 500, sm: "100%" }, maxHeight: 400, my: 2 }} >
-                <Card>
+        <Box sx={{display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <Box sx={{ maxHeight: 400, my: 2 }} >
+                <Card sx={{width: {xs: "100vw",  sm: 500, md: 600 }}}>
                     <CardContent>
                         <Box sx={{
                             display: "flex",
                             gap: "1rem",
                             justifyContent: "space-between",
+                            flexDirection: {xs: "column-reverse", md: "row"},
                             height: "100%"
                         }}>
-                            <Box sx={{ display: "flex", gap: ".5rem", flexDirection: "column" }}>
+                            <Box sx={{ display: "flex", width: "100%", gap: ".5rem", flexDirection: "column" }}>
 
                                 <Typography variant="h6">
                                     Audio Player
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary">
-                                    - Wave Winds -
+                                    - INTP -
                                 </Typography>
                                 <Divider />
                                 <Typography variant="caption" component="p" color="text.warning">
@@ -141,7 +142,7 @@ const Player = () => {
                                     borderColor: theme.palette.primary.main,
                                     borderRadius: theme.shape.borderRadius,
                                     padding: ".25rem",
-                                    maxWidth: "fit-content"
+                                    // maxWidth: "fit-content"
                                 }}>
 
                                     <IconButton onClick={handlePrev} size="large">
