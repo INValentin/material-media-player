@@ -21,7 +21,7 @@ import ArrowLeft from "@mui/icons-material/ArrowLeft"
 function ToggleTheme() {
     const theme = useTheme()
     const themeToggle = useToggleTheme()
-    
+
     const isLightMode = theme.palette.mode === "light"
     return (
         <Box>
@@ -35,7 +35,7 @@ function ToggleTheme() {
 const Header = () => {
     const navigate = useNavigate()
     const location = useLocation()
-    
+
     return (
         <>
             <AppBar position='static'>
@@ -45,15 +45,12 @@ const Header = () => {
                             variant="outlined"
                             onClick={() => navigate(location.pathname === "/" ? "/playlist" : "/")}
                             color="inherit"
-                            >
-                            {location.pathname === "/" ? <>{"Playlist "} <ArrowRight /></>: <><ArrowLeft /> {" Player"}</>}
+                        >
+                            {location.pathname === "/" ? <>{"Playlist "} <ArrowRight /></> : <><ArrowLeft /> {" Player"}</>}
                         </Button>
                     </Stack>
-                    
+
                     <ToggleTheme />
-                    <IconButton color="inherit" edge="end">
-                        <AccountCircle />
-                    </IconButton>
                 </Toolbar>
             </AppBar>
             <Outlet />

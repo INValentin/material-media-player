@@ -29,25 +29,29 @@ const Player = () => {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
     const sliderRef = useRef(null)
     const theme = useTheme()
-    const [duration, setDuration] = useState(0)
-    const [volume, setVolume] = useState(0)
     const [currentTime, setCurrentTime] = useState(0)
     const [paused, setPaused] = useState(true)
-    const { currentIndex, tracks, currentTrack, playNext, playPrev } = usePlaylist()
-    const { onPause, onPlay, onEnded, player, onVolumeChange, onTrackChange, onTimeUpdate } = usePlayer()
     const [canPlay, setCanPlay] = useState(false)
-
-    useEffect(() => {
-        if (canPlay) {
-            onTrackChange(currentTrack)
-            onPlay()
-            setCanPlay(false)
-        }
-    }, [currentTrack])
+    const { tracks, currentIndex, playNext, playPrev } = usePlaylist()
+    const { currentTrack, onPause, onPlay, onTrackChange, onEnded, player, onTimeUpdate } = usePlayer()
 
     const handleShowVolume = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget)
     }
+
+    useEffect(() => {
+        if (currentIndex === -1 || tracks.length === 0) {
+            onTrackChange(null)
+        }
+    }, [])
+
+    useEffect(() => {
+        if (canPlay) {
+            onTrackChange(tracks[currentIndex])
+            onPlay()
+            setCanPlay(false)
+        }
+    }, [currentIndex, canPlay])
 
     const formatTime = (secs: number): string => {
         let mins = Math.floor(secs / 60) || 0
@@ -68,16 +72,16 @@ const Player = () => {
         player.currentTime = Number(value * player.duration / 100) || 0
     }
 
-    onVolumeChange(() => {
-        setVolume(player.volume)
-    })
-
     onTimeUpdate(() => {
         setCurrentTime(player.currentTime)
         setPaused(player.paused)
     })
 
     const togglePlay = () => {
+        if (currentIndex === -1 && tracks.length) {
+            onTrackChange(tracks[0])
+        }
+
         player.paused ? onPlay() : onPause()
     }
 
@@ -95,8 +99,8 @@ const Player = () => {
 
     return (
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <Box sx={{ width: { lg: 600, md: 500, sm: 300 }, maxHeight: 400, m: 2 }} >
-                <Card sx={{ boxShadow: theme.shadows[10], background: "primary.main" }}>
+            <Box sx={{ width: { lg: 600, md: 500, sm: "100%" }, maxHeight: 400, my: 2 }} >
+                <Card>
                     <CardContent>
                         <Box sx={{
                             display: "flex",
@@ -140,14 +144,14 @@ const Player = () => {
                                     maxWidth: "fit-content"
                                 }}>
 
-                                    <IconButton onClick={handleNext} size="large">
+                                    <IconButton onClick={handlePrev} size="large">
                                         <SkipPrevious />
                                     </IconButton>
                                     <IconButton onClick={togglePlay} size="large">
                                         {!paused && <PauseCircle sx={{ height: 38, width: 38 }} />}
                                         {paused && <PlayCircle sx={{ height: 38, width: 38 }} />}
                                     </IconButton>
-                                    <IconButton onClick={handlePrev} size="large">
+                                    <IconButton onClick={handleNext} size="large">
                                         <SkipNext />
                                     </IconButton>
                                     <IconButton
@@ -171,7 +175,7 @@ const Player = () => {
                                 background: "error",
                                 padding: ".5rem",
                                 height: 200,
-                                display: {md: "flex", xs: "none"},
+                                display: { md: "flex", xs: "none" },
                                 justifyContent: "center",
                                 alignItems: "center",
                                 boxShadow: theme.shadows[4]

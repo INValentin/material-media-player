@@ -1,7 +1,8 @@
-import React, { EventHandler, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 interface PlayerAPI {
     player: HTMLAudioElement
+    currentTrack: File | null
     addPlayer: (player: HTMLAudioElement) => void
     onPause: () => void
     onPlay: () => void
@@ -22,24 +23,30 @@ const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     const playerRef = useRef<HTMLAudioElement>(new Audio)
     playerRef.current.crossOrigin = 'anonymous';
     const [player, setPlayer] = useState(playerRef.current)
-    
-    
+    const [currentTrack, setCurrentTrack] = useState<File | null>(null)
+
     useEffect(() => {
         const newPlayer = playerRef.current
         newPlayer.crossOrigin = 'anonymous';
         setPlayer(newPlayer)
     }, [])
 
+    useEffect(() => {
+        if (!currentTrack) {
+            player.src = ""
+        }
+    }, [currentTrack])
+
     const addPlayer = (player: HTMLAudioElement) => {
         setPlayer(player)
     }
 
     const onPause = () => {
-        player?.pause()
+        currentTrack && player?.pause()
     }
 
     const onPlay = () => {
-        player?.play()
+        currentTrack && player?.play()
     }
 
     const onEnded = (callback: (ev: Event) => void) => {
@@ -53,10 +60,11 @@ const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     const onTrackChange = (track: File | null) => {
         if (!player) return
         if (!track) {
-            player.pause()
-            player.src = ""
+            setCurrentTrack(null)
             return
         }
+        player.pause()
+        setCurrentTrack(track)
         const url = window.URL.createObjectURL(track)
         player.src = url
     }
@@ -71,6 +79,7 @@ const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
 
     const playerAPI = {
         player,
+        currentTrack,
         addPlayer,
         onPause,
         onPlay,

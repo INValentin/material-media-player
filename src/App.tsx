@@ -20,7 +20,23 @@ const ToggleThemeContext = React.createContext<ToggleTheme>({} as ToggleTheme)
 
 const ToggleThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLightMode, setIsLightMode] = useState(true)
-  const theme = createTheme({ palette: { mode: isLightMode ? "light" : "dark" } })
+  const theme = createTheme({
+    palette: {
+      primary: {
+        light: '#757ce8',
+        main: '#3f50b5',
+        dark: '#002884',
+        contrastText: '#fff',
+      },
+      secondary: {
+        light: '#ff7961',
+        main: '#f44336',
+        dark: '#ba000d',
+        contrastText: '#000',
+      },
+      mode: isLightMode ? "light" : "dark"
+    }
+  })
 
   const themeToggle: ToggleTheme = {
     toggleTheme() {
@@ -39,18 +55,8 @@ export const useToggleTheme = () => {
   return React.useContext(ToggleThemeContext)
 }
 
-// const router = createBrowserRouter(
-//   createRoutesFromElements(
-//   )
-// )
-
-
-// if (import.meta.hot) {
-//   import.meta.hot.dispose(() => router.dispose());
-// }
 
 function App() {
-  // const location = useLocation()
   useEffect(() => {
     window.document.title = "Media Player App"
   }, [])
