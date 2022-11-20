@@ -14,6 +14,8 @@ import Brightness7 from "@mui/icons-material/Brightness7"
 import { useTheme } from "@mui/material"
 import { useToggleTheme } from "../App"
 import { useNavigate, Outlet, useLocation } from "react-router-dom"
+import ArrowRight from "@mui/icons-material/ArrowRight"
+import ArrowLeft from "@mui/icons-material/ArrowLeft"
 
 
 function ToggleTheme() {
@@ -44,7 +46,7 @@ const Header = () => {
                             onClick={() => navigate(location.pathname === "/" ? "/playlist" : "/")}
                             color="inherit"
                             >
-                            {location.pathname === "/" ? "Playlist" : "Player"}
+                            {location.pathname === "/" ? <>{"Playlist "} <ArrowRight /></>: <><ArrowLeft /> {" Player"}</>}
                         </Button>
                     </Stack>
                     

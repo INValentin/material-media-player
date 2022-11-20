@@ -1,7 +1,7 @@
-import React, { EventHandler, useEffect, useMemo, useState } from 'react'
+import React, { EventHandler, useEffect, useMemo, useRef, useState } from 'react'
 
 interface PlayerAPI {
-    duration: number
+    player: HTMLAudioElement
     addPlayer: (player: HTMLAudioElement) => void
     onPause: () => void
     onPlay: () => void
@@ -10,7 +10,6 @@ interface PlayerAPI {
     onTimeUpdate: (callback: (ev: Event) => void) => void
     onTrackChange: (track: File | null) => void
     onSeek: (time: number) => void
-    log: string
 }
 
 const PlayerContext = React.createContext({} as PlayerAPI)
@@ -20,24 +19,16 @@ export const usePlayer = () => {
 }
 
 const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
-    const [player, setPlayer] = useState<HTMLAudioElement | null>()
-    const [log, setLog] = useState("")
-
-    const addLog = useMemo(
-        () => (newlog: any) => setLog(log + " / " + JSON.stringify({newlog}))
-    , [log])
-
+    const playerRef = useRef<HTMLAudioElement>(new Audio)
+    playerRef.current.crossOrigin = 'anonymous';
+    const [player, setPlayer] = useState(playerRef.current)
+    
+    
     useEffect(() => {
-        const newPlayer = new Audio()
+        const newPlayer = playerRef.current
         newPlayer.crossOrigin = 'anonymous';
-
         setPlayer(newPlayer)
     }, [])
-
-    useEffect(() => {
-        addLog(player)
-        player?.addEventListener("canplay", e => addLog("canplay"))
-    }, [player])
 
     const addPlayer = (player: HTMLAudioElement) => {
         setPlayer(player)
@@ -67,9 +58,7 @@ const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
             return
         }
         const url = window.URL.createObjectURL(track)
-        addLog({url, name: track.name})
         player.src = url
-        player.play().then(e => addLog("PLAY")).catch(er => addLog({m: er.message, str: "ERROR"}))
     }
 
     const onTimeUpdate = (callBack: (ev: Event) => void) => {
@@ -81,7 +70,7 @@ const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const playerAPI = {
-        duration: Number(player?.duration),
+        player,
         addPlayer,
         onPause,
         onPlay,
@@ -89,8 +78,7 @@ const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
         onEnded,
         onTimeUpdate,
         onTrackChange,
-        onSeek,
-        log
+        onSeek
     }
 
     return <PlayerContext.Provider value={playerAPI}>

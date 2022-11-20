@@ -9,6 +9,7 @@ import ListSubheader from "@mui/material/ListSubheader"
 import ListItemAvatar from "@mui/material/ListItemAvatar"
 import Avatar from "@mui/material/Avatar"
 import Stack from "@mui/material/Stack"
+import Container from "@mui/material/Container"
 import MusicNoteRounded from '@mui/icons-material/MusicNoteRounded'
 import Button from '@mui/material/Button'
 import PlaylistAddCheck from '@mui/icons-material/PlaylistAddCheck'
@@ -17,65 +18,62 @@ import { usePlayer } from './usePlayer'
 
 
 const PlayList = () => {
-  const { currentIndex, tracks, addTracks } = usePlaylist()
-  const { duration, log, onTrackChange, onPlay } = usePlayer()
-  const [nlog, setNlog] = useState("")
+  const { currentIndex, changeCurrentTrack, tracks, addTracks } = usePlaylist()
+  const { player, onTrackChange, onPlay } = usePlayer()
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     const inputElement = inputRef.current
-    // inputElement?.setAttribute("webkitdirectory", "true")
   }, [])
 
   const handleAddTracks = () => {
     const audioPlayer = new Audio()
     const newTracks = [
       ...(inputRef.current?.files || [])
-    ].filter(t => !Boolean(audioPlayer.canPlayType(t.type)))
+    ].filter(file => !!player.canPlayType(file.type) && !tracks.some(tr => tr.name === file.name))
+    // console.log({ newTracks })
     addTracks(newTracks, "end")
   }
 
   const handlePlayTrack = (index: number) => {
-    alert("add track")
-    setNlog("add track - " + index)
+    player.src = ""
     onTrackChange(tracks[index])
     onPlay()
+    changeCurrentTrack(index)
   }
 
   return (
-
-    <Box>
-      <Divider />
-      <List>
-        <Stack spacing={2} mb={1} justifyContent="space-between" direction="row">
-          <ListSubheader>Playlist</ListSubheader>
-          <Button component="label" startIcon={<PlaylistAddCheck />}>
-            Add Audio
-            <input onChange={handleAddTracks} ref={inputRef} hidden type="file" multiple />
-          </Button>
-        </Stack>
+    <Container maxWidth="md">
+      <Box>
         <Divider />
-        {tracks.map((track, i) => (
-          <>
-            <ListItem onClick={() => handlePlayTrack(i)} selected={i === currentIndex} divider button key={Math.random()}>
-              <ListItemAvatar>
-                <Avatar>
-                  <MusicNoteRounded />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText>{track.name}</ListItemText>
-            </ListItem>
-          </>
-        ))}
-      </List>
-      {<p>{log}</p>}
-      <p>NLOG:</p>
-      <p>{nlog} -- {duration}</p>
-      {tracks.length === 0 && <Typography color="text.secondary" variant='h6' textAlign="center">
-        No tracks on playlist
-      </Typography>}
+        <List>
+          <Stack spacing={2} mb={1} justifyContent="space-between" direction="row">
+            <ListSubheader>Playlist</ListSubheader>
+            <Button component="label" startIcon={<PlaylistAddCheck />}>
+              Add Audio
+              <input onChange={handleAddTracks} ref={inputRef} hidden type="file" multiple />
+            </Button>
+          </Stack>
+          <Divider />
+          {tracks.map((track, i) => (
+            <>
+              <ListItem key={track.name} onClick={() => handlePlayTrack(i)} selected={i === currentIndex} divider button>
+                <ListItemAvatar>
+                  <Avatar>
+                    <MusicNoteRounded />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText>{track.name}</ListItemText>
+              </ListItem>
+            </>
+          ))}
+        </List>
+        {tracks.length === 0 && <Typography color="text.secondary" variant='h6' textAlign="center">
+          No tracks on playlist
+        </Typography>}
 
-    </Box>
+      </Box>
+    </Container>
   )
 }
 

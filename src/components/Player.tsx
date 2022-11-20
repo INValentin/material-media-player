@@ -17,30 +17,85 @@ import SkipPrevious from "@mui/icons-material/SkipPrevious"
 // import VolumeDown from "@mui/icons-material/VolumeDown"
 // import VolumeUp from "@mui/icons-material/VolumeUp"
 import VolumeUpRounded from "@mui/icons-material/VolumeUpRounded"
+import PauseCircle from "@mui/icons-material/PauseCircle"
 
 import candyImage from "../assets/candy.png"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
+import { usePlaylist } from "./usePlaylist"
+import { usePlayer } from "./usePlayer"
 
 
 const Player = () => {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+    const sliderRef = useRef(null)
     const theme = useTheme()
+    const [duration, setDuration] = useState(0)
+    const [volume, setVolume] = useState(0)
+    const [currentTime, setCurrentTime] = useState(0)
+    const [paused, setPaused] = useState(true)
+    const { currentIndex, tracks, currentTrack, playNext, playPrev } = usePlaylist()
+    const { onPause, onPlay, onEnded, player, onVolumeChange, onTrackChange, onTimeUpdate } = usePlayer()
+    const [canPlay, setCanPlay] = useState(false)
+
+    useEffect(() => {
+        if (canPlay) {
+            onTrackChange(currentTrack)
+            onPlay()
+            setCanPlay(false)
+        }
+    }, [currentTrack])
 
     const handleShowVolume = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget)
+    }
+
+    const formatTime = (secs: number): string => {
+        let mins = Math.floor(secs / 60) || 0
+        let seconds = Math.floor(secs - (mins * 60)) || 0
+        const withTrailingZero = (num: number) => `${num < 10 ? "0" + num : num}`
+        return `${withTrailingZero(mins)}:${withTrailingZero(seconds)}`
     }
 
     const handleHideVolume = () => {
         setAnchorEl(null)
     }
 
-    useEffect(() => {
-        console.log(anchorEl)
-    }, [anchorEl])
+    const handleChangeVolume = (value: number) => {
+        player.volume = value / 100
+    }
+
+    const handleSeek = (value: number) => {
+        player.currentTime = Number(value * player.duration / 100) || 0
+    }
+
+    onVolumeChange(() => {
+        setVolume(player.volume)
+    })
+
+    onTimeUpdate(() => {
+        setCurrentTime(player.currentTime)
+        setPaused(player.paused)
+    })
+
+    const togglePlay = () => {
+        player.paused ? onPlay() : onPause()
+    }
+
+    const handleNext = () => {
+        playNext()
+        setCanPlay(true)
+    }
+
+    onEnded(handleNext)
+
+    const handlePrev = () => {
+        playPrev()
+        setCanPlay(true)
+    }
 
     return (
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <Box sx={{ maxWidth: 600, maxHeight: 400, m: 2 }} >
+            <Box sx={{ width: { lg: 600, md: 500, sm: 300 }, maxHeight: 400, m: 2 }} >
                 <Card sx={{ boxShadow: theme.shadows[10], background: "primary.main" }}>
                     <CardContent>
                         <Box sx={{
@@ -59,14 +114,21 @@ const Player = () => {
                                 </Typography>
                                 <Divider />
                                 <Typography variant="caption" component="p" color="text.warning">
-                                    You Just Didn't Like Me That Much
+                                    {currentTrack?.name || "Track name"}
                                 </Typography>
 
                                 <Divider />
                                 <Stack direction="row" alignItems={"center"} spacing={2}>
-                                    <Typography variant="caption">00:00</Typography>
-                                    <Slider />
-                                    <Typography variant="caption">03:42</Typography>
+                                    <Typography variant="caption">{formatTime(currentTime)}</Typography>
+                                    <Slider
+                                        sx={{
+                                            "& .MuiSlider-thumb": {
+                                                height: 12,
+                                                width: 12,
+                                            }
+                                        }}
+                                        min={0} max={100} value={(currentTime * 100 / player.duration) || 0} ref={sliderRef} onChangeCommitted={(_, value) => handleSeek(value as number)} />
+                                    <Typography variant="caption">{formatTime(player.duration)}</Typography>
                                 </Stack>
                                 <Box sx={{
                                     display: "flex",
@@ -78,13 +140,14 @@ const Player = () => {
                                     maxWidth: "fit-content"
                                 }}>
 
-                                    <IconButton size="large">
+                                    <IconButton onClick={handleNext} size="large">
                                         <SkipPrevious />
                                     </IconButton>
-                                    <IconButton size="large">
-                                        <PlayCircle sx={{ height: 38, width: 38 }} />
+                                    <IconButton onClick={togglePlay} size="large">
+                                        {!paused && <PauseCircle sx={{ height: 38, width: 38 }} />}
+                                        {paused && <PlayCircle sx={{ height: 38, width: 38 }} />}
                                     </IconButton>
-                                    <IconButton size="large">
+                                    <IconButton onClick={handlePrev} size="large">
                                         <SkipNext />
                                     </IconButton>
                                     <IconButton
@@ -97,28 +160,18 @@ const Player = () => {
                                     anchorEl={anchorEl}
                                     open={Boolean(anchorEl)}
                                     onClose={handleHideVolume}
-                                    sx={{ width: 200, }} 
+                                    sx={{ width: 200, }}
                                 >
-                                    {/* <MenuItem> */}
-                                    <Stack sx={{px: 1}}>
-                                        <Slider sx={{width: 70, mx: 1 }} color="secondary" />
+                                    <Stack sx={{ px: 1 }}>
+                                        <Slider max={100} min={0} onChangeCommitted={(_, value) => handleChangeVolume(value as number)} value={player.volume * 100} sx={{ width: 70, mx: 1 }} color="secondary" />
                                     </Stack>
-                                    {/* </MenuItem> */}
-                                    {/* <Stack spacing={2} direction="row" alignItems="center">
-                                        <IconButton size="small">
-                                            <VolumeDown />
-                                        </IconButton>
-                                        <IconButton size="small">
-                                            <VolumeUp />
-                                        </IconButton>
-                                    </Stack> */}
                                 </Menu>
                             </Box>
                             <Box sx={{
                                 background: "error",
                                 padding: ".5rem",
                                 height: 200,
-                                display: "flex",
+                                display: {md: "flex", xs: "none"},
                                 justifyContent: "center",
                                 alignItems: "center",
                                 boxShadow: theme.shadows[4]
@@ -129,7 +182,8 @@ const Player = () => {
                                     sx={{
                                         boderRadius: theme.shape.borderRadius,
                                         border: "0px solid",
-                                        height: 150, maxWidth: 100
+                                        objectFit: "cover",
+                                        height: 200, width: 200
                                     }}
                                 />
                             </Box>
