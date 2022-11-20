@@ -34,6 +34,8 @@ const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         if (!currentTrack) {
             player.src = ""
+        } else {
+            window.document.title = currentTrack.name.split(".")[0].slice(0,30) + " | " + "Media Player"
         }
     }, [currentTrack])
 
