@@ -16,7 +16,7 @@ export default defineConfig({
     manifest: {
       name: "Audio Player",
       short_name: "Audio",
-      description: "Reat PWA example using vite-plugin-pwa.",
+      description: "Enjoy offline music :D",
       theme_color: "#ffffff",
       icons: [
         {
