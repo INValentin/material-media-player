@@ -115,7 +115,6 @@ const PlayList = () => {
                       onClick={() => handlePlayTrack(i)}
                       selected={i === currentIndex}
                       divider
-                      button={true}
                     >
                       <ListItemAvatar>
                         <Avatar>
