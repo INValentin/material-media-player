@@ -17,6 +17,9 @@ import SkipPrevious from "@mui/icons-material/SkipPrevious"
 // import VolumeDown from "@mui/icons-material/VolumeDown"
 // import VolumeUp from "@mui/icons-material/VolumeUp"
 import VolumeUpRounded from "@mui/icons-material/VolumeUpRounded"
+import VolumeOffRounded from "@mui/icons-material/VolumeOffRounded"
+import RepeatOneOnSharp from "@mui/icons-material/RepeatOneOnSharp"
+import RepeatRounded from "@mui/icons-material/RepeatRounded"
 import PauseCircle from "@mui/icons-material/PauseCircle"
 
 import candyImage from "../assets/candy.png"
@@ -36,6 +39,7 @@ const Player = () => {
     const { currentTrack, onPause, onPlay, onTrackChange, onEnded, player, onTimeUpdate } = usePlayer()
 
     const handleShowVolume = (event: React.MouseEvent<HTMLElement>) => {
+        player.muted = false
         setAnchorEl(event.currentTarget)
     }
 
@@ -90,6 +94,10 @@ const Player = () => {
         setCanPlay(true)
     }
 
+    const handleToggleRepeat = () => {
+        player.loop = !player.loop
+    }
+
     onEnded(handleNext)
 
     const handlePrev = () => {
@@ -98,15 +106,15 @@ const Player = () => {
     }
 
     return (
-        <Box sx={{display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
             <Box sx={{ maxHeight: 400, my: 2 }} >
-                <Card sx={{width: {xs: "100vw",  sm: 500, md: 600 }}}>
+                <Card sx={{ width: { xs: "100vw", sm: 500, md: 600 } }}>
                     <CardContent>
                         <Box sx={{
                             display: "flex",
                             gap: "1rem",
                             justifyContent: "space-between",
-                            flexDirection: {xs: "column-reverse", md: "row"},
+                            flexDirection: { xs: "column-reverse", md: "row" },
                             height: "100%"
                         }}>
                             <Box sx={{ display: "flex", width: "100%", gap: ".5rem", flexDirection: "column" }}>
@@ -155,10 +163,13 @@ const Player = () => {
                                     <IconButton onClick={handleNext} size="large">
                                         <SkipNext />
                                     </IconButton>
+                                    <IconButton onClick={handleToggleRepeat} size="large">
+                                        {player.loop ? <RepeatOneOnSharp /> : <RepeatRounded />}
+                                    </IconButton>
                                     <IconButton
                                         aria-controls="volume-menu"
                                         onClick={handleShowVolume} size="large">
-                                        <VolumeUpRounded />
+                                        {(player.muted || player.volume === 0) ? <VolumeOffRounded /> : <VolumeUpRounded />}
                                     </IconButton>
                                 </Box>
                                 <Menu

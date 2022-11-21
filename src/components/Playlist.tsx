@@ -57,7 +57,7 @@ const PlayList = () => {
   const handleRemoveTrack = () => {
     if (removeTrackIndex === undefined) return
     removeTrack(removeTrackIndex)
-    
+
     if (removeTrackIndex === currentIndex) {
       playNext()
     }
@@ -88,7 +88,7 @@ const PlayList = () => {
         }
         TransitionComponent={(props: SlideProps) => <Slide {...props} direction="up" />}
         onClose={handleRemoveTrack}
-        message={removeTrackIndex !== undefined && `(REMOVE): ${tracks[removeTrackIndex].name.slice(0,40)}..`} />
+        message={removeTrackIndex !== undefined && `(REMOVE): ${tracks[removeTrackIndex].name.slice(0, 40)}..`} />
       <Box>
         <Divider />
         <Stack spacing={2} my={1} justifyContent="space-between" direction="row">
@@ -103,6 +103,7 @@ const PlayList = () => {
           <Droppable droppableId='playlist-id'>
             {(provided) => <List ref={provided.innerRef} {...provided.droppableProps} >
               {tracks.map((track, i) => (
+                (i !== removeTrackIndex) &&
                 <Draggable key={track.name} draggableId={track.name} index={i}>
                   {(provided, snapshot) => (
                     <ListItem
