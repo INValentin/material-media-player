@@ -9,6 +9,7 @@ import Typography from "@mui/material/Typography"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
 import CardContent from "@mui/material/CardContent"
+import Button from "@mui/material/Button"
 import { useTheme } from "@mui/material"
 
 import PlayCircle from "@mui/icons-material/PlayCircle"
@@ -21,6 +22,8 @@ import VolumeOffRounded from "@mui/icons-material/VolumeOffRounded"
 import RepeatOneOnSharp from "@mui/icons-material/RepeatOneOnSharp"
 import RepeatRounded from "@mui/icons-material/RepeatRounded"
 import PauseCircle from "@mui/icons-material/PauseCircle"
+import HeartBrokenOutlined from "@mui/icons-material/HeartBrokenOutlined"
+import Link from "@mui/material/Link"
 
 import candyImage from "../assets/candy.png"
 import React, { useEffect, useRef, useState } from "react"
@@ -120,14 +123,14 @@ const Player = () => {
                             <Box sx={{ display: "flex", width: "100%", gap: ".5rem", flexDirection: "column" }}>
 
                                 <Typography variant="h6">
-                                    Audio Player
+                                   Audio Player (Installable)
                                 </Typography>
                                 <Typography variant="subtitle1" color="text.secondary">
-                                    - INTP -
+                                    - Enjoy Offline Listening -
                                 </Typography>
                                 <Divider />
                                 <Typography variant="caption" component="p" color="text.warning">
-                                    {currentTrack?.name || "Track name"}
+                                    {currentTrack?.name.split(".")[0] || "Track name"}
                                 </Typography>
 
                                 <Divider />
@@ -172,6 +175,12 @@ const Player = () => {
                                         {(player.muted || player.volume === 0) ? <VolumeOffRounded /> : <VolumeUpRounded />}
                                     </IconButton>
                                 </Box>
+                                <Divider />
+                                <Stack spacing={0.5} mt={1} alignItems="center" direction="row">
+                                    <Typography variant="caption">Made with </Typography>
+                                    <HeartBrokenOutlined />
+                                    <Typography variant="caption">by <Link target="_blank" href="https://valentinportifolio.netlify.app">Valentin</Link></Typography>
+                                </Stack>
                                 <Menu
                                     anchorEl={anchorEl}
                                     open={Boolean(anchorEl)}
