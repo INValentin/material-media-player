@@ -44,11 +44,11 @@ const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const onPause = () => {
-        currentTrack && player?.pause()
+        player?.pause()
     }
 
     const onPlay = () => {
-        currentTrack && player?.play()
+        player?.play()
     }
 
     const onEnded = (callback: (ev: Event) => void) => {
@@ -65,7 +65,6 @@ const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
             setCurrentTrack(null)
             return
         }
-        player.pause()
         setCurrentTrack(track)
         const url = window.URL.createObjectURL(track)
         player.src = url

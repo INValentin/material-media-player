@@ -42,6 +42,7 @@ const PlayList = () => {
   }
 
   const handlePlayTrack = (index: number) => {
+    console.log("play", index)
     player.src = ""
     onTrackChange(tracks[index])
     onPlay()
@@ -114,7 +115,7 @@ const PlayList = () => {
                       onClick={() => handlePlayTrack(i)}
                       selected={i === currentIndex}
                       divider
-                      button={false}
+                      button={true}
                     >
                       <ListItemAvatar>
                         <Avatar>
